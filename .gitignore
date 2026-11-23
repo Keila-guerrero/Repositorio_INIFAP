@@ -23,13 +23,6 @@ Thumbs.db
 *.mobileprovision
 *.orig.*
 
-# Archivos locales de backend
-backend/uploads/*
-!backend/uploads/.gitkeep
-
 # Variables de entorno
 .env
 
-# Portadas generadas automáticamente (se regeneran con importar_pdfs.js)
-frontend/portadas/*
-!frontend/portadas/.gitkeep

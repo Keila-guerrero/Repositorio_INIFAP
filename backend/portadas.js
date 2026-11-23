@@ -6,7 +6,7 @@ const { execFile } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const CARPETA_PORTADAS = path.join(__dirname, '..', 'frontend', 'portadas');
+const CARPETA_PORTADAS = path.join(__dirname, 'public', 'portadas');
 
 // Devuelve '/portadas/<id>.jpg' o null si no se pudo generar
 function generarPortada(rutaPdf, idPublicacion) {
