@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositorio de Publicaciones | INIFAP Durango</title>
+    <!-- Font Awesome 6.4 (íconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <a class="skip-link" href="#vista">Saltar al contenido</a>
+
+    <div class="main-wrapper">
+
+        <!-- CABECERA: logo INIFAP (izquierda), título, logo Durango (derecha).
+             Para cambiar los logos reemplaza los archivos de la carpeta img/ -->
+        <header>
+            <div class="gob-bar" aria-hidden="true"></div>
+            <div class="header-logos">
+                <a href="index.html" aria-label="Ir al inicio">
+                    <img class="logo logo-inifap" src="img/logo-inifap.png" alt="Logotipo del INIFAP">
+                </a>
+                <div class="header-text">
+                    <p class="header-sub">INIFAP – Campo Experimental Valle del Guadiana, Durango</p>
+                    <h1 class="header-title">Repositorio de Publicaciones</h1>
+                </div>
+                <img class="logo logo-durango" src="img/logo-durango.png" alt="Logotipo del Gobierno de Durango">
+            </div>
+            <div class="divider-line" aria-hidden="true"></div>
+        </header>
+
+        <main>
+            <!-- BUSCADOR -->
+            <h2 class="search-section-title">Buscar en el repositorio</h2>
+            <form id="formBuscador" class="search-container" role="search">
+                <button type="submit" class="search-icon-btn" aria-label="Buscar">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                </button>
+                <input id="campoBusqueda" class="search-box" type="search" autocomplete="off"
+                       placeholder="Buscador (ingresa palabras clave...)"
+                       aria-label="Buscar publicaciones por palabras clave">
+                <button type="button" id="botonLimpiar" class="clear-search-btn" aria-label="Limpiar búsqueda">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <!-- Aquí js/portal.js dibuja: áreas -> formatos -> publicaciones -->
+            <section id="vista" aria-live="polite"></section>
+        </main>
+
+        <footer class="footer-gob">
+            <p><strong>Instituto Nacional de Investigaciones Forestales, Agrícolas y Pecuarias</strong></p>
+            <p>Campo Experimental Valle del Guadiana, Durango &nbsp;|&nbsp; <a href="admin.html">Administración</a></p>
+            <p>&copy; 2026 INIFAP. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Ventana con el código QR de una publicación (la llena js/portal.js) -->
+    <div id="modalQr" class="modal-qr" role="dialog" aria-modal="true" aria-labelledby="modalQrTitulo">
+        <div class="modal-qr-caja">
+            <h3 id="modalQrTitulo"></h3>
+            <img id="modalQrImagen" src="" alt="Código QR de la publicación">
+            <div class="modal-qr-acciones">
+                <a id="modalQrDescargar" class="btn-view" href="" download="qr-publicacion.png">
+                    <i class="fa-solid fa-download" aria-hidden="true"></i> Descargar QR
+                </a>
+                <button type="button" id="modalQrCerrar" class="btn-view btn-view--borde">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/portal.js"></script>
+</body>
+</html>

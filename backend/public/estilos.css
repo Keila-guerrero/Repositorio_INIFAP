@@ -1,0 +1,835 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO INSTITUCIONAL - REPOSITORIO INIFAP DURANGO
+   Paleta: Guinda (#611232), Dorado (#e6d194), Verde Institucional (#002f2a)
+   ========================================================================== */
+
+:root {
+  --guinda-gob: #611232;
+  --guinda-hover: #4a0d26;
+  --guinda-oscuro: #38081b;
+  --verde-gob: #002f2a;
+  --dorado-gob: #e6d194;
+  --gris-gob: #98989a;
+  --blanco: #ffffff;
+  --texto-oscuro: #1f1f1f;
+  --fondo-claro: #fafafa;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: transparent;
+  color: var(--texto-oscuro);
+  line-height: 1.45;
+  overflow-x: hidden;
+}
+
+body {
+  padding: 20px 15px 40px 15px;
+}
+
+.main-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* --- ENCABEZADO Y FRANJA INSTITUCIONAL --- */
+.gob-bar {
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--guinda-gob) 0%,
+    var(--guinda-gob) 70%,
+    var(--dorado-gob) 70%,
+    var(--dorado-gob) 85%,
+    var(--verde-gob) 85%
+  );
+  margin-bottom: 18px;
+  border-radius: 3px;
+}
+
+.header-sub {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--verde-gob);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.header-title {
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 800;
+  color: var(--guinda-gob);
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+
+.divider-line {
+  width: 100%;
+  height: 4px;
+  background-color: var(--guinda-gob);
+  margin-bottom: 24px;
+  border-radius: 2px;
+}
+
+/* --- RUTA DE NAVEGACIÓN (BREADCRUMB) --- */
+.breadcrumb {
+  font-size: 15px;
+  color: var(--gris-gob);
+  margin-bottom: 22px;
+  font-weight: 600;
+}
+
+.breadcrumb a {
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.breadcrumb a:hover {
+  color: var(--guinda-gob);
+  text-decoration: underline;
+}
+
+.breadcrumb strong {
+  color: var(--guinda-gob);
+}
+
+/* --- BUSCADORES REDONDEADOS --- */
+.search-section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--guinda-gob);
+  margin-bottom: 14px;
+}
+
+.search-container {
+  max-width: 700px;
+  margin: 0 auto 28px auto;
+  position: relative;
+}
+
+.search-box {
+  width: 100%;
+  padding: 14px 48px 14px 55px;
+  border-radius: 50px;
+  border: 2px solid var(--guinda-gob);
+  background-color: var(--blanco);
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.search-box:focus {
+  box-shadow: 0 6px 20px rgba(97, 18, 50, 0.16);
+}
+
+.search-icon-btn {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background-color: var(--guinda-gob);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blanco);
+  font-size: 15px;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #eee;
+  color: #444;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.clear-search-btn:hover {
+  background: var(--guinda-gob);
+  color: var(--blanco);
+}
+
+/* --- TARJETAS DE MISIÓN / VISIÓN / ACERVO (INICIO) --- */
+.identity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.identity-card {
+  background: var(--blanco);
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid var(--gris-gob);
+  border-top: 6px solid var(--verde-gob);
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.identity-card i {
+  font-size: 26px;
+  color: var(--verde-gob);
+  margin-bottom: 10px;
+}
+
+.identity-card h3 {
+  font-size: 18px;
+  color: var(--guinda-gob);
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+
+.identity-card p {
+  font-size: 14px;
+  color: #555;
+}
+
+/* --- TARJETAS PRINCIPALES DE ÁREAS (AGRÍCOLA, PECUARIO, FORESTAL) --- */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.btn-card-box {
+  background: linear-gradient(145deg, var(--guinda-gob) 0%, #4b0d26 100%);
+  color: var(--blanco);
+  border-radius: 16px;
+  padding: 28px 20px;
+  box-shadow: 0 6px 18px rgba(97, 18, 50, 0.22);
+  border: 2px solid var(--dorado-gob);
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  user-select: none;
+}
+
+.btn-card-box:hover {
+  background: linear-gradient(145deg, var(--guinda-hover) 0%, var(--guinda-oscuro) 100%);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(97, 18, 50, 0.35);
+  border-color: var(--blanco);
+}
+
+.area-icon, .guinda-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--dorado-gob);
+  border: 2px solid var(--dorado-gob);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  margin-bottom: 14px;
+}
+
+.area-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--dorado-gob);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.area-desc {
+  font-size: 14px;
+  color: var(--blanco);
+  opacity: 0.95;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.area-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dorado-gob);
+  margin-bottom: 14px;
+}
+
+.action-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--guinda-gob);
+  background-color: var(--dorado-gob);
+  padding: 10px 20px;
+  border-radius: 25px;
+  width: 100%;
+}
+
+/* --- BANNERS DE CABECERA DE SECCIÓN --- */
+/* Variante A: Blanco con borde superior guinda (Portadas de Área) */
+.cat-header {
+  background-color: var(--blanco);
+  border: 1px solid var(--gris-gob);
+  border-top: 6px solid var(--guinda-gob);
+  border-radius: 14px;
+  padding: 24px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.cat-info h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--guinda-gob);
+  margin-bottom: 4px;
+}
+
+.cat-info p {
+  font-size: 15px;
+  color: var(--verde-gob);
+  font-weight: 600;
+}
+
+.btn-back {
+  background-color: var(--guinda-gob);
+  color: var(--dorado-gob);
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  border: 2px solid var(--dorado-gob);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: var(--guinda-hover);
+  color: var(--blanco);
+  border-color: var(--blanco);
+}
+
+/* Variante B: Banner Guinda Sólido (Subcategorías: Desplegables, Folletos, etc.) */
+.cat-header--guinda {
+  background: linear-gradient(145deg, var(--guinda-gob) 0%, #4b0d26 100%);
+  color: var(--blanco);
+  border: 2px solid var(--dorado-gob);
+  border-radius: 16px;
+  padding: 26px 24px;
+  box-shadow: 0 6px 18px rgba(97, 18, 50, 0.22);
+}
+
+.cat-header--guinda .cat-info h2 {
+  color: var(--dorado-gob);
+}
+
+.cat-header--guinda .cat-info p {
+  color: var(--blanco);
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+.cat-header--guinda .btn-back {
+  background-color: var(--dorado-gob);
+  color: var(--guinda-gob);
+  font-weight: 800;
+}
+
+.cat-header--guinda .btn-back:hover {
+  background-color: var(--blanco);
+  color: var(--guinda-gob);
+  border-color: var(--blanco);
+}
+
+/* --- TARJETAS DE SUBCATEGORÍA (5 BOTONES GUINDA) --- */
+.formats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+  margin-bottom: 34px;
+}
+
+.guinda-card {
+  background: linear-gradient(145deg, var(--guinda-gob) 0%, #4b0d26 100%);
+  color: var(--blanco);
+  border: 2px solid var(--dorado-gob);
+  border-radius: 16px;
+  padding: 26px 18px;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(97, 18, 50, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+  cursor: pointer;
+}
+
+.guinda-card:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(145deg, var(--guinda-hover) 0%, var(--guinda-oscuro) 100%);
+  box-shadow: 0 10px 24px rgba(97, 18, 50, 0.35);
+  border-color: var(--blanco);
+}
+
+.guinda-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blanco);
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+.guinda-badge {
+  background-color: var(--dorado-gob);
+  color: var(--guinda-gob);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* --- FICHAS DE PUBLICACIONES (CATÁLOGO Y RESULTADOS) --- */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--dorado-gob);
+}
+
+.results-header h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--guinda-gob);
+}
+
+.results-count {
+  background: var(--verde-gob);
+  color: var(--blanco);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.pub-card {
+  background: var(--blanco);
+  border-radius: 14px;
+  border: 1px solid var(--gris-gob);
+  border-top: 5px solid var(--guinda-gob);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pub-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.09);
+}
+
+.pub-card-header {
+  padding: 14px 18px;
+  background: var(--fondo-claro);
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-gob {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  background: var(--guinda-gob);
+  color: var(--dorado-gob);
+}
+
+.tag-gob--verde {
+  background: var(--verde-gob);
+  color: var(--blanco);
+}
+
+.tag-formato {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  background: #fdf6f8;
+  color: var(--guinda-gob);
+  border: 1px solid var(--dorado-gob);
+}
+
+.pub-card-body {
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.pub-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--guinda-gob);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.pub-card-author {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.pub-card-metrics {
+  display: flex;
+  gap: 15px;
+  font-size: 13px;
+  color: var(--verde-gob);
+  background: #f0f4f3;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.pub-card-footer {
+  padding: 14px 18px;
+  background: var(--blanco);
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-view {
+  background: var(--guinda-gob);
+  color: var(--blanco);
+  padding: 9px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.btn-view:hover {
+  background: var(--guinda-hover);
+}
+
+.qr-preview {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid var(--gris-gob);
+  cursor: pointer;
+}
+
+/* --- PIE DE PÁGINA INSTITUCIONAL --- */
+.footer-gob {
+  border-top: 2px solid var(--gris-gob);
+  padding-top: 20px;
+  margin-top: 35px;
+  font-size: 13px;
+  color: #444;
+}
+
+.footer-gob strong {
+  color: var(--guinda-gob);
+}
+
+/* --- RESPONSIVO MÓVIL --- */
+@media (max-width: 600px) {
+  body {
+    padding: 15px 10px 30px 10px;
+  }
+  .btn-card-box {
+    padding: 22px 16px;
+  }
+  .area-title {
+    font-size: 21px;
+    margin-bottom: 8px;
+  }
+  .area-desc {
+    margin-bottom: 15px;
+    font-size: 13.5px;
+  }
+}
+
+/* ==========================================================================
+   EXTENSIONES (agregadas al sistema de diseño; las reglas de arriba no se
+   modificaron). Cubren lo que el sistema base no trae: logos en la cabecera,
+   portada de cada publicación, ventana del QR, panel de administración,
+   estados de carga/vacío y utilidades.
+   ========================================================================== */
+
+.oculto { display: none !important; }
+
+:focus-visible {
+  outline: 3px solid var(--dorado-gob);
+  outline-offset: 2px;
+}
+
+a.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--guinda-gob);
+  color: var(--blanco);
+  padding: 10px 16px;
+  z-index: 1000;
+}
+a.skip-link:focus { left: 10px; top: 10px; }
+
+/* --- Cabecera con logos (INIFAP izquierda, títulos al centro, Durango derecha) --- */
+.header-logos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+.header-logos .logo {
+  height: 64px;
+  width: auto;
+  flex-shrink: 0;
+  display: block;
+}
+.header-logos .header-text { flex: 1; min-width: 0; }
+.header-logos .header-title { margin-bottom: 0; }
+
+/* --- Buscador: el icono es un botón de envío --- */
+button.search-icon-btn { border: none; cursor: pointer; }
+button.search-icon-btn:hover { background-color: var(--guinda-hover); }
+.search-box::-webkit-search-cancel-button { display: none; }
+.clear-search-btn.visible { display: flex; }
+
+/* --- Tarjetas de inicio: enlaces con look de tarjeta --- */
+a.btn-card-box, a.guinda-card { color: var(--blanco); }
+.identity-card .identity-num {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--verde-gob);
+  line-height: 1.1;
+}
+.identity-card i { display: block; }
+
+/* Tarjeta con 0 publicaciones */
+.btn-card-box.vacia, .guinda-card.vacia { opacity: 0.6; }
+.guinda-card .guinda-icon { margin-bottom: 12px; }
+.guinda-card .area-desc { font-size: 13px; text-align: center; margin-bottom: 14px; }
+.btn-card-box .area-title, .btn-card-box .area-desc, .btn-card-box .area-count { text-align: center; }
+
+/* --- Ruta de navegación --- */
+.breadcrumb .sep { margin: 0 8px; color: var(--gris-gob); }
+
+/* --- Banner de sección: título con subtítulo en el flujo de resultados --- */
+.cat-info { min-width: 0; }
+.cat-header--guinda { margin-bottom: 22px; }
+
+/* --- Ficha de publicación: portada + datos --- */
+.pub-card-body { display: flex; gap: 16px; align-items: flex-start; }
+.pub-card-cover {
+  flex: 0 0 96px;
+  width: 96px;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--gris-gob);
+  background: var(--fondo-claro);
+  display: block;
+  text-decoration: none;
+}
+.pub-card-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portada-vacia {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--guinda-gob);
+  background: #fdf6f8;
+  font-size: 12px;
+}
+.portada-vacia i { font-size: 26px; }
+.pub-card-info { flex: 1; min-width: 0; }
+.pub-card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pub-card-metrics { flex-wrap: wrap; }
+.pub-card-metrics i { margin-right: 5px; }
+.pub-card-footer .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-view--borde {
+  background: var(--blanco);
+  color: var(--guinda-gob);
+  border: 2px solid var(--guinda-gob);
+  padding: 7px 14px;
+}
+.btn-view--borde:hover { background: var(--guinda-gob); color: var(--blanco); }
+button.btn-view, button.btn-back { font-family: inherit; }
+button.btn-view { border: none; cursor: pointer; }
+button.btn-view--borde { border: 2px solid var(--guinda-gob); }
+.qr-preview { object-fit: contain; background: var(--blanco); padding: 2px; }
+
+.mostrar-mas-wrap { text-align: center; margin: 26px 0 6px; }
+
+/* --- Mensajes de estado (cargando, vacío, error) --- */
+.mensaje-estado {
+  background: var(--blanco);
+  border: 1px solid var(--gris-gob);
+  border-left: 6px solid var(--dorado-gob);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+  color: #444;
+  font-size: 15px;
+  margin: 20px auto;
+  max-width: 620px;
+}
+.mensaje-estado strong { display: block; color: var(--guinda-gob); font-size: 18px; margin-bottom: 6px; }
+.mensaje-estado .btn-back { margin-top: 14px; }
+.cargando i { color: var(--guinda-gob); margin-right: 8px; }
+
+/* --- Ventana (modal) del código QR --- */
+.modal-qr {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-qr.abierto { display: flex; }
+.modal-qr-caja {
+  background: var(--blanco);
+  border-top: 6px solid var(--guinda-gob);
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+.modal-qr-caja h3 { color: var(--guinda-gob); font-size: 17px; margin-bottom: 14px; line-height: 1.35; }
+.modal-qr-caja img { width: 240px; max-width: 100%; margin: 0 auto 16px; display: block; }
+.modal-qr-acciones { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* --- Panel de administración (admin.html) --- */
+.panel {
+  background: var(--blanco);
+  border: 1px solid var(--gris-gob);
+  border-top: 6px solid var(--guinda-gob);
+  border-radius: 14px;
+  padding: 28px 24px;
+  max-width: 760px;
+  margin: 0 auto 24px;
+  text-align: left;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+.panel h2 { color: var(--guinda-gob); font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+.panel > p { color: #555; margin-bottom: 18px; font-size: 15px; }
+.campo { margin-bottom: 16px; }
+.campo label { display: block; font-weight: 700; color: var(--guinda-gob); margin-bottom: 6px; font-size: 14px; }
+.campo input[type="text"],
+.campo input[type="number"],
+.campo input[type="password"],
+.campo input[type="file"],
+.campo select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 2px solid var(--gris-gob);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  background: var(--blanco);
+  color: var(--texto-oscuro);
+}
+.campo input:focus, .campo select:focus { outline: none; border-color: var(--guinda-gob); box-shadow: 0 0 0 3px rgba(97, 18, 50, 0.14); }
+.campo-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.boton-ancho { width: 100%; justify-content: center; padding: 13px 20px; font-size: 16px; }
+button.btn-back.boton-ancho { border: 2px solid var(--dorado-gob); }
+button.btn-back:disabled { opacity: 0.6; cursor: wait; }
+.error-formulario {
+  background: #fdecee;
+  border: 1px solid #c0392b;
+  border-left: 6px solid #c0392b;
+  color: #7b1e14;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+#resultado { margin-top: 28px; padding-top: 22px; border-top: 2px solid var(--dorado-gob); text-align: center; }
+#resultado h2 { color: var(--verde-gob); }
+.resultado-imagenes { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin: 18px 0; }
+.resultado-imagenes figure { margin: 0; }
+.resultado-imagenes img { max-height: 220px; width: auto; border: 1px solid var(--gris-gob); border-radius: 8px; margin: 0 auto 6px; }
+.resultado-imagenes figcaption { font-size: 13px; font-weight: 700; color: var(--verde-gob); }
+.resultado-acciones { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 600px) {
+  .header-logos { flex-wrap: wrap; gap: 10px; }
+  .header-logos .logo { height: 44px; }
+  .header-logos .header-text { order: 3; flex-basis: 100%; }
+  .header-sub { font-size: 12px; letter-spacing: 0.6px; }
+  .pub-card-cover { flex-basis: 78px; width: 78px; }
+  .campo-doble { grid-template-columns: 1fr; }
+  .catalog-grid { grid-template-columns: 1fr; }
+}
+
+.titulo-seccion:focus { outline: none; }
