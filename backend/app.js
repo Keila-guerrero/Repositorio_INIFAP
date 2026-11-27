@@ -83,10 +83,81 @@ function armarPublicacion(fila) {
         area: fila.area,
         formato: fila.formato,
         portada: portadaDe(fila),
-        ver: urlDelPdf(fila.pdf_ruta),
+        ver: '/ver/' + fila.id,          // abre el PDF y cuenta una consulta
         descargar: '/descargar/' + fila.id,
-        qr: '/qr/' + fila.id
+        qr: '/qr/' + fila.id,
+        consultas: Number(fila.consultas) || 0,
+        descargas: Number(fila.descargas) || 0
     };
+}
+
+// URL pública del sitio (para los QR). En Render se toma de BASE_URL o del propio host
+function urlBase(req) {
+    if (process.env.BASE_URL) return process.env.BASE_URL.replace(/\/+$/, '');
+    return req.protocol + '://' + req.get('host');
+}
+
+// ---- Contadores de consultas y descargas ----------------------------
+// Antirrebote: la misma persona (IP) no suma dos veces el mismo PDF en 30 segundos
+// (evita dobles clics y que el visor de PDF pida el archivo por partes).
+const VENTANA_CONTEO_MS = 30 * 1000;
+const ultimosConteos = new Map();
+function debeContar(req, id, tipo) {
+    if (req.method !== 'GET') return false;                       // HEAD no cuenta
+    const rango = req.headers.range;
+    if (rango && !/^bytes=0-/.test(rango)) return false;          // partes siguientes del mismo PDF
+    const clave = req.ip + '|' + id + '|' + tipo;
+    const ahora = Date.now();
+    if (ahora - (ultimosConteos.get(clave) || 0) < VENTANA_CONTEO_MS) return false;
+    ultimosConteos.set(clave, ahora);
+    if (ultimosConteos.size > 5000) {                             // limpieza para no crecer sin fin
+        for (const [k, t] of ultimosConteos) if (ahora - t > VENTANA_CONTEO_MS) ultimosConteos.delete(k);
+    }
+    return true;
+}
+async function sumarContador(columna, id) {
+    const col = columna === 'descargas' ? 'descargas' : 'consultas';
+    try {
+        await pool.query('UPDATE publicaciones SET ' + col + ' = ' + col + ' + 1 WHERE id = ?', [id]);
+    } catch (error) {
+        console.error('No se pudo actualizar el contador:', error.message);  // nunca bloquea la descarga
+    }
+}
+
+// Crea las columnas de contadores si la base de datos aún no las tiene
+async function asegurarContadores() {
+    const [cols] = await pool.query(
+        `SELECT COLUMN_NAME AS nombre FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'publicaciones'`);
+    const nombres = cols.map((c) => c.nombre || c.COLUMN_NAME);
+    if (!nombres.includes('consultas')) {
+        await pool.query('ALTER TABLE publicaciones ADD COLUMN consultas INT UNSIGNED NOT NULL DEFAULT 0');
+    }
+    if (!nombres.includes('descargas')) {
+        await pool.query('ALTER TABLE publicaciones ADD COLUMN descargas INT UNSIGNED NOT NULL DEFAULT 0');
+    }
+}
+
+// Ruta absoluta del PDF de una publicación (o null si no existe / sale de uploads)
+function rutaDelPdf(pdfRuta) {
+    const absoluta = path.resolve(CARPETA_UPLOADS, pdfRuta);
+    if (!absoluta.startsWith(CARPETA_UPLOADS + path.sep) || !fs.existsSync(absoluta)) return null;
+    return absoluta;
+}
+
+// Content-Disposition que respeta acentos y ñ en cualquier navegador
+// (nombre simple en ASCII + nombre completo codificado en UTF-8)
+function cabeceraArchivo(tipo, nombre) {
+    const ascii = nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '');
+    return tipo + '; filename="' + ascii + '"; filename*=UTF-8\'\'' + encodeURIComponent(nombre);
+}
+
+function paginaNoEncontrada(res, mensaje) {
+    res.status(404).type('html').send(
+        '<!DOCTYPE html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+        '<title>PDF no disponible</title><body style="font-family:Segoe UI,Arial,sans-serif;text-align:center;padding:60px 20px;color:#1f1f1f">' +
+        '<h1 style="color:#611232">' + mensaje + '</h1>' +
+        '<p><a href="/" style="color:#611232;font-weight:700">Volver al repositorio</a></p></body></html>');
 }
 
 // Evita que % y _ escritos por el visitante actúen como comodines de LIKE
@@ -167,7 +238,7 @@ app.get('/api/publicaciones', async (req, res) => {
         });
 
         const [filas] = await pool.query(`
-            SELECT p.id, p.titulo, p.anio, p.pdf_ruta, p.portada,
+            SELECT p.id, p.titulo, p.anio, p.pdf_ruta, p.portada, p.consultas, p.descargas,
                    a.nombre AS area, f.nombre AS formato
             FROM publicaciones p
             JOIN areas a ON a.id = p.id_area
@@ -188,23 +259,28 @@ app.get('/api/publicaciones', async (req, res) => {
 // ---------------------------------------------------------------------
 app.get('/descargar/:id', async (req, res) => {
     try {
+        const id = parseInt(req.params.id, 10) || 0;
         const [filas] = await pool.query(
             'SELECT titulo, anio, pdf_ruta FROM publicaciones WHERE id = ? AND activo = 1',
-            [req.params.id]
+            [id]
         );
         if (filas.length === 0) {
-            return res.status(404).send('Publicación no encontrada');
+            return paginaNoEncontrada(res, 'Publicación no encontrada');
         }
 
-        const rutaAbsoluta = path.resolve(CARPETA_UPLOADS, filas[0].pdf_ruta);
         // Seguridad: el archivo debe estar dentro de la carpeta uploads
-        if (!rutaAbsoluta.startsWith(CARPETA_UPLOADS + path.sep) || !fs.existsSync(rutaAbsoluta)) {
-            return res.status(404).send('El archivo PDF no está en el servidor');
+        const rutaAbsoluta = rutaDelPdf(filas[0].pdf_ruta);
+        if (!rutaAbsoluta) {
+            return paginaNoEncontrada(res, 'El archivo PDF no está en el servidor');
         }
+
+        if (debeContar(req, id, 'descargas')) await sumarContador('descargas', id);
 
         const nombreLimpio = filas[0].titulo.replace(/[\\/:*?"<>|]/g, '').slice(0, 120);
         const prefijoAnio = filas[0].anio ? filas[0].anio + ' ' : '';
-        res.download(rutaAbsoluta, prefijoAnio + nombreLimpio + '.pdf');
+        res.type('application/pdf');
+        res.set('Content-Disposition', cabeceraArchivo('attachment', prefijoAnio + nombreLimpio + '.pdf'));
+        res.sendFile(rutaAbsoluta, { dotfiles: 'allow' });
     } catch (error) {
         console.error('Error al descargar:', error);
         res.status(500).send('Error en el servidor');
@@ -212,24 +288,73 @@ app.get('/descargar/:id', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------
-// 4b. Código QR (PNG) de una publicación: /qr/12  (apunta al PDF)
-//     Para que funcione desde otros celulares define BASE_URL
+// 4a. Ver el PDF en el navegador: /ver/12
+//     Es el enlace del botón "Ver" y el que llevan los códigos QR.
+//     Cuenta una consulta y muestra el PDF.
+// ---------------------------------------------------------------------
+app.get('/ver/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10) || 0;
+        const [filas] = await pool.query(
+            'SELECT titulo, anio, pdf_ruta FROM publicaciones WHERE id = ? AND activo = 1', [id]);
+        if (filas.length === 0) return paginaNoEncontrada(res, 'Publicación no encontrada');
+
+        const rutaAbsoluta = rutaDelPdf(filas[0].pdf_ruta);
+        if (!rutaAbsoluta) return paginaNoEncontrada(res, 'El archivo PDF no está en el servidor');
+
+        if (debeContar(req, id, 'consultas')) await sumarContador('consultas', id);
+
+        const nombre = ((filas[0].anio ? filas[0].anio + ' ' : '') + filas[0].titulo)
+            .replace(/[\\/:*?"<>|]/g, '').slice(0, 120) + '.pdf';
+        res.type('application/pdf');
+        res.set('Content-Disposition', cabeceraArchivo('inline', nombre));
+        res.sendFile(rutaAbsoluta, { dotfiles: 'allow' });   // admite descarga por partes (visores de PDF y celulares)
+    } catch (error) {
+        console.error('Error al abrir el PDF:', error);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// ---------------------------------------------------------------------
+// 4b. Contadores en vivo: /api/contadores?ids=1,2,3
+//     La página lo consulta cada pocos segundos para actualizar las tarjetas.
+// ---------------------------------------------------------------------
+app.get('/api/contadores', async (req, res) => {
+    try {
+        const ids = (req.query.ids || '').toString().split(',')
+            .map((n) => parseInt(n, 10)).filter(Boolean).slice(0, 200);
+        if (ids.length === 0) return res.json({});
+
+        const [filas] = await pool.query(
+            'SELECT id, consultas, descargas FROM publicaciones WHERE id IN (?)', [ids]);
+        const salida = {};
+        filas.forEach((f) => { salida[f.id] = { consultas: Number(f.consultas), descargas: Number(f.descargas) }; });
+        res.set('Cache-Control', 'no-store').json(salida);
+    } catch (error) {
+        console.error('Error al leer contadores:', error);
+        res.status(500).json({ error: 'Error al consultar los contadores' });
+    }
+});
+
+// ---------------------------------------------------------------------
+// 4c. Código QR (PNG) de una publicación: /qr/12
+//     Apunta a  <sitio>/ver/12  -> abre ese PDF (y cuenta la consulta).
+//     La dirección es corta, así el QR es sencillo y se escanea bien incluso pequeño.
 // ---------------------------------------------------------------------
 app.get('/qr/:id', async (req, res) => {
     try {
+        const id = parseInt(req.params.id, 10) || 0;
         const [filas] = await pool.query(
-            'SELECT pdf_ruta FROM publicaciones WHERE id = ? AND activo = 1',
-            [parseInt(req.params.id, 10) || 0]
-        );
+            'SELECT id FROM publicaciones WHERE id = ? AND activo = 1', [id]);
         if (filas.length === 0) return res.status(404).send('Publicación no encontrada');
 
-        const baseUrl = process.env.BASE_URL || (req.protocol + '://' + req.get('host'));
-        const png = await qrcode.toBuffer(baseUrl + urlDelPdf(filas[0].pdf_ruta), {
-            width: 400,
+        const png = await qrcode.toBuffer(urlBase(req) + '/ver/' + id, {
+            width: 600,
             margin: 2,
+            errorCorrectionLevel: 'M',
             color: { dark: '#611232', light: '#ffffff' }
         });
-        res.type('png').set('Cache-Control', 'public, max-age=3600').send(png);
+        res.type('png').set('Cache-Control', 'no-cache').send(png);
     } catch (error) {
         console.error('Error al generar QR:', error);
         res.status(500).send('Error en el servidor');
@@ -272,8 +397,7 @@ app.post('/api/publicaciones', subirPdf.single('archivoPdf'), async (req, res) =
 
         // C. Código QR que apunta al PDF.
         //    Para que funcione desde otros celulares define BASE_URL (ej. http://192.168.1.75:3000)
-        const baseUrl = process.env.BASE_URL || (req.protocol + '://' + req.get('host'));
-        const urlPdf = baseUrl + urlDelPdf(pdfRuta);
+        const urlPdf = urlBase(req) + '/ver/' + idNuevo;
         const qr = await qrcode.toDataURL(urlPdf, {
             width: 400,
             margin: 2,
@@ -295,7 +419,11 @@ app.use((error, req, res, next) => {
     next(error);
 });
 
-app.listen(puerto, () => {
-    console.log('Repositorio INIFAP corriendo en http://localhost:' + puerto);
-    console.log('Panel de administración:     http://localhost:' + puerto + '/admin.html');
-});
+asegurarContadores()
+    .catch((error) => console.error('No se pudieron preparar los contadores:', error.message))
+    .finally(() => {
+        app.listen(puerto, () => {
+            console.log('Repositorio INIFAP corriendo en http://localhost:' + puerto);
+            console.log('Panel de administración:     http://localhost:' + puerto + '/admin.html');
+        });
+    });

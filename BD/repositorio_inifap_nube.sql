@@ -46,6 +46,8 @@ CREATE TABLE publicaciones (
   pdf_ruta        VARCHAR(600) NOT NULL UNIQUE,
   portada         VARCHAR(200) NULL,
   activo          TINYINT(1)   NOT NULL DEFAULT 1,
+  consultas       INT UNSIGNED NOT NULL DEFAULT 0,
+  descargas       INT UNSIGNED NOT NULL DEFAULT 0,
   fecha_registro  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_pub_area    FOREIGN KEY (id_area)    REFERENCES areas(id),
   CONSTRAINT fk_pub_formato FOREIGN KEY (id_formato) REFERENCES formatos(id),

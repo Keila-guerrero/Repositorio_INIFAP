@@ -79,6 +79,11 @@ const ICONOS_AREA = {
     'Forestal': 'fa-tree'
 };
 const ICONO_AREA_GENERICO = 'fa-leaf';
+const ICONO_AREA_FA = {   // versión con prefijo, para las fichas de publicación
+    'Agrícola': 'fa-solid fa-seedling',
+    'Pecuario': 'fa-solid fa-cow',
+    'Forestal': 'fa-solid fa-tree'
+};
 
 const ICONOS_FORMATO = {
     'Desplegables': 'fa-map',
@@ -186,28 +191,30 @@ function tarjetaPublicacion(pub) {
         : portadaVacia(pub.anio);
 
     return `
-        <article class="pub-card">
+        <article class="pub-card" data-id="${pub.id}">
             <div class="pub-card-header">
-                <span class="tag-gob">${esc(pub.area)}</span>
-                <span class="tag-formato">${esc(pub.formato)}</span>
+                <span class="tag-gob tag-gob--verde">${esc(pub.formato)}</span>
+                <span class="pub-card-year">${esc(anio)}</span>
             </div>
             <div class="pub-card-body">
-                <a class="pub-card-cover" href="${esc(pub.ver)}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                <a class="pub-card-cover" href="${esc(pub.ver)}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"
+                   data-contar="1">
                     ${imagenPortada}
                 </a>
                 <div class="pub-card-info">
                     <h3 class="pub-card-title" title="${esc(pub.titulo)}">${esc(pub.titulo)}</h3>
-                    <div class="pub-card-metrics">
-                        <span><i class="fa-regular fa-calendar" aria-hidden="true"></i>${esc(anio)}</span>
-                        <span><i class="fa-regular fa-file-pdf" aria-hidden="true"></i>PDF</span>
-                    </div>
+                    <p class="pub-card-author"><i class="${ICONO_AREA_FA[pub.area] || 'fa-solid fa-leaf'}" aria-hidden="true"></i> ${esc(pub.area)}</p>
                 </div>
+            </div>
+            <div class="pub-card-metrics" title="Se actualiza en tiempo real">
+                <span><i class="fa-regular fa-eye" aria-hidden="true"></i> <b class="cnt-consultas" data-id="${pub.id}">${pub.consultas || 0}</b> Consultas</span>
+                <span><i class="fa-solid fa-download" aria-hidden="true"></i> <b class="cnt-descargas" data-id="${pub.id}">${pub.descargas || 0}</b> Descargas</span>
             </div>
             <div class="pub-card-footer">
                 <div class="acciones">
-                    <a class="btn-view" href="${esc(pub.ver)}" target="_blank" rel="noopener"
+                    <a class="btn-view" href="${esc(pub.ver)}" target="_blank" rel="noopener" data-contar="1"
                        aria-label="Ver ${esc(pub.titulo)}"><i class="fa-solid fa-eye" aria-hidden="true"></i> Ver</a>
-                    <a class="btn-view btn-view--borde" href="${esc(pub.descargar)}"
+                    <a class="btn-view btn-view--borde" href="${esc(pub.descargar)}" data-contar="1"
                        aria-label="Descargar ${esc(pub.titulo)}"><i class="fa-solid fa-download" aria-hidden="true"></i> Descargar</a>
                 </div>
                 <img class="qr-preview" src="${esc(pub.qr || '')}" alt="Código QR de ${esc(pub.titulo)}"
@@ -414,6 +421,50 @@ modalQr.addEventListener('click', (evento) => {
 document.getElementById('modalQrCerrar').addEventListener('click', cerrarQr);
 document.addEventListener('keydown', (evento) => {
     if (evento.key === 'Escape') cerrarQr();
+});
+
+// ---------------------------------------------------------------------
+// Contadores en tiempo real (consultas y descargas)
+// Cada pocos segundos se piden los números de las tarjetas que se ven en pantalla.
+// ---------------------------------------------------------------------
+const SEGUNDOS_ENTRE_ACTUALIZACIONES = 5;
+
+function animarNumero(elemento, nuevo) {
+    if (String(nuevo) === elemento.textContent) return;
+    elemento.textContent = nuevo;
+    elemento.classList.remove('cnt-cambio');
+    void elemento.offsetWidth;            // reinicia la animación
+    elemento.classList.add('cnt-cambio');
+}
+
+async function actualizarContadores() {
+    const tarjetas = document.querySelectorAll('.pub-card[data-id]');
+    if (tarjetas.length === 0 || document.hidden) return;
+    const ids = Array.from(tarjetas).map((t) => t.dataset.id).slice(0, 200).join(',');
+    try {
+        const respuesta = await fetch('/api/contadores?ids=' + ids, { cache: 'no-store' });
+        if (!respuesta.ok) return;
+        const datos = await respuesta.json();
+        Object.keys(datos).forEach((id) => {
+            const c = document.querySelector('.cnt-consultas[data-id="' + id + '"]');
+            const d = document.querySelector('.cnt-descargas[data-id="' + id + '"]');
+            if (c) animarNumero(c, datos[id].consultas);
+            if (d) animarNumero(d, datos[id].descargas);
+        });
+    } catch (error) {
+        /* sin conexión: se vuelve a intentar en el siguiente ciclo */
+    }
+}
+
+setInterval(actualizarContadores, SEGUNDOS_ENTRE_ACTUALIZACIONES * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) actualizarContadores(); });
+
+// Tras pulsar Ver / Descargar o abrir un PDF, se refresca enseguida para ver el cambio
+vista.addEventListener('click', (evento) => {
+    if (evento.target.closest('[data-contar]')) {
+        setTimeout(actualizarContadores, 1500);
+        setTimeout(actualizarContadores, 4000);
+    }
 });
 
 // El buscador respeta el área/formato en que estás
